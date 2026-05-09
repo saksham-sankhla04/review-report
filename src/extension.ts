@@ -3,6 +3,13 @@ import { addReviewFinding } from "./commands/addReviewFinding";
 import { FindingsProvider, FindingTreeItem } from "./providers/FindingProvider";
 import { generateReport } from "./reportGenertaor";
 import { scanFindings } from "./scanner";
+import { SEVERITIES, TYPES } from "./constants";
+import {
+  clearFilters,
+  setSearchFilter,
+  setSeverityFilter,
+  setTypeFilter,
+} from "./state/filterState";
 
 let findingsProvider: FindingsProvider;
 
@@ -68,10 +75,70 @@ export function activate(context: vscode.ExtensionContext) {
     }
   );
 
+  const filterBySeverityCommand = vscode.commands.registerCommand(
+    "tracereview.filterBySeverity",
+    async () => {
+      const selected = await vscode.window.showQuickPick(
+        ["All", ...SEVERITIES],
+        {
+          placeHolder: "Filter by severity",
+        }
+      );
+
+      if (!selected) {
+        return;
+      }
+
+      setSeverityFilter(selected === "All" ? undefined : selected);
+      await refreshFindingsAndReport();
+    }
+  );
+
+  const filterByTypeCommand = vscode.commands.registerCommand(
+    "tracereview.filterByType",
+    async () => {
+      const selected = await vscode.window.showQuickPick(["All", ...TYPES], {
+        placeHolder: "Filter by type",
+      });
+
+      if (!selected) {
+        return;
+      }
+
+      setTypeFilter(selected === "All" ? undefined : selected);
+      await refreshFindingsAndReport();
+    }
+  );
+
+  const searchFindingsCommand = vscode.commands.registerCommand(
+    "tracereview.searchFindings",
+    async () => {
+      const search = await vscode.window.showInputBox({
+        prompt: "Search review findings",
+        placeHolder: "Example: payment, navbar, security",
+      });
+
+      setSearchFilter(search || undefined);
+      await refreshFindingsAndReport();
+    }
+  );
+
+  const clearFiltersCommand = vscode.commands.registerCommand(
+    "tracereview.clearFilters",
+    async () => {
+      clearFilters();
+      await refreshFindingsAndReport();
+    }
+  );
+
   context.subscriptions.push(
     generateReportCommand,
     openFindingCommand,
     addFindingCommand,
+    filterBySeverityCommand,
+    filterByTypeCommand,
+    searchFindingsCommand,
+    clearFiltersCommand,
     autoGenerateOnSave
   );
 

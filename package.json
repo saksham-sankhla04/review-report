@@ -27,6 +27,22 @@
       {
         "command": "tracereview.addFinding",
         "title": "TraceReview: Add Review Finding"
+      },
+      {
+        "command": "tracereview.filterBySeverity",
+        "title": "TraceReview: Filter by Severity"
+      },
+      {
+        "command": "tracereview.filterByType",
+        "title": "TraceReview: Filter by Type"
+      },
+      {
+        "command": "tracereview.searchFindings",
+        "title": "TraceReview: Search Findings"
+      },
+      {
+        "command": "tracereview.clearFilters",
+        "title": "TraceReview: Clear Filters"
       }
     ],
     "menus": {
@@ -34,6 +50,28 @@
         {
           "command": "tracereview.addFinding",
           "when": "editorTextFocus",
+          "group": "navigation"
+        }
+      ],
+      "view/title": [
+        {
+          "command": "tracereview.filterBySeverity",
+          "when": "view == tracereview.findingsView",
+          "group": "navigation"
+        },
+        {
+          "command": "tracereview.filterByType",
+          "when": "view == tracereview.findingsView",
+          "group": "navigation"
+        },
+        {
+          "command": "tracereview.searchFindings",
+          "when": "view == tracereview.findingsView",
+          "group": "navigation"
+        },
+        {
+          "command": "tracereview.clearFilters",
+          "when": "view == tracereview.findingsView",
           "group": "navigation"
         }
       ]

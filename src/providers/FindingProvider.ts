@@ -1,6 +1,7 @@
 import * as vscode from "vscode";
 import { SEVERITIES } from "../constants";
 import { Finding } from "../types";
+import { getFilters } from "../state/filterState";
 
 export class FindingsProvider
   implements vscode.TreeDataProvider<FindingTreeItem>
@@ -12,6 +13,33 @@ export class FindingsProvider
 
   private findings: Finding[] = [];
 
+  private getFilteredFindings() {
+    const filters = getFilters();
+
+    return this.findings.filter((finding) => {
+      if (filters.severity && finding.severity !== filters.severity) {
+        return false;
+      }
+
+      if (filters.type && finding.type !== filters.type) {
+        return false;
+      }
+
+      if (filters.search) {
+        const search = filters.search.toLowerCase();
+
+        return (
+          finding.message.toLowerCase().includes(search) ||
+          finding.file.toLowerCase().includes(search) ||
+          finding.type.toLowerCase().includes(search) ||
+          finding.severity.toLowerCase().includes(search)
+        );
+      }
+
+      return true;
+    });
+  }
+
   refresh(findings: Finding[]) {
     this.findings = findings;
     this._onDidChangeTreeData.fire();
@@ -22,10 +50,12 @@ export class FindingsProvider
   }
 
   getChildren(element?: FindingTreeItem): Thenable<FindingTreeItem[]> {
+    const visibleFindings = this.getFilteredFindings();
+
     if (!element) {
       return Promise.resolve(
         SEVERITIES.map((severity) => {
-          const count = this.findings.filter(
+          const count = visibleFindings.filter(
             (f) => f.severity === severity
           ).length;
 
@@ -38,14 +68,46 @@ export class FindingsProvider
         }).filter(
           (item) =>
             item.countKey &&
-            this.findings.some((f) => f.severity === item.countKey)
+            visibleFindings.some((f) => f.severity === item.countKey)
         )
       );
     }
 
-    if (element.countKey) {
-      const items = this.findings
-        .filter((f) => f.severity === element.countKey)
+    if (element.countKey && !element.fileKey) {
+      const files = Array.from(
+        new Set(
+          visibleFindings
+            .filter((f) => f.severity === element.countKey)
+            .map((f) => f.file)
+        )
+      );
+
+      return Promise.resolve(
+        files.map((file) => {
+          const count = visibleFindings.filter(
+            (f) => f.severity === element.countKey && f.file === file
+          ).length;
+
+          const item = new FindingTreeItem(
+            `${file} (${count})`,
+            vscode.TreeItemCollapsibleState.Collapsed,
+            undefined,
+            element.countKey,
+            file
+          );
+
+          item.iconPath = new vscode.ThemeIcon("file-code");
+
+          return item;
+        })
+      );
+    }
+
+    if (element.countKey && element.fileKey) {
+      const items = visibleFindings
+        .filter(
+          (f) => f.severity === element.countKey && f.file === element.fileKey
+        )
         .map((finding) => {
           const item = new FindingTreeItem(
             `${finding.type}: ${finding.message}`,
@@ -53,7 +115,7 @@ export class FindingsProvider
             finding
           );
 
-          item.description = `${finding.file}:${finding.line}`;
+          item.description = `Line ${finding.line}`;
           item.tooltip = `${finding.file}:${finding.line}\n${finding.message}`;
           item.command = {
             command: "tracereview.openFinding",
@@ -76,12 +138,17 @@ export class FindingTreeItem extends vscode.TreeItem {
     public readonly label: string,
     public readonly collapsibleState: vscode.TreeItemCollapsibleState,
     public readonly finding?: Finding,
-    public readonly countKey?: string
+    public readonly countKey?: string,
+    public readonly fileKey?: string
   ) {
     super(label, collapsibleState);
 
-    if (countKey) {
+    if (countKey && !fileKey) {
       this.iconPath = getSeverityIcon(countKey);
+    }
+
+    if (fileKey) {
+      this.iconPath = new vscode.ThemeIcon("file-code");
     }
 
     if (finding) {
