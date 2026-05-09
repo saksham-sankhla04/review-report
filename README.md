@@ -1,71 +1,195 @@
-# tracereview README
+# TraceReview
 
-This is the README for your extension "tracereview". After writing up a brief description, we recommend including the following sections.
+> Lightweight code review reporting directly inside VS Code.
 
-## Features
-
-Describe specific features of your extension including screenshots of your extension in action. Image paths are relative to this README file.
-
-For example if there is an image subfolder under your extension project workspace:
-
-\!\[feature X\]\(images/feature-x.png\)
-
-> Tip: Many popular extensions utilize animations. This is an excellent way to show off your extension! We recommend short, focused animations that are easy to follow.
-
-## Requirements
-
-If you have any requirements or dependencies, add a section describing those and how to install and configure them.
-
-## Extension Settings
-
-Include if your extension adds any VS Code settings through the `contributes.configuration` extension point.
-
-For example:
-
-This extension contributes the following settings:
-
-* `myExtension.enable`: Enable/disable this extension.
-* `myExtension.thing`: Set to `blah` to do something.
-
-## Known Issues
-
-Calling out known issues can help limit users opening duplicate issues against your extension.
-
-## Release Notes
-
-Users appreciate release notes as you update your extension.
-
-### 1.0.0
-
-Initial release of ...
-
-### 1.0.1
-
-Fixed issue #.
-
-### 1.1.0
-
-Added features X, Y, and Z.
+TraceReview helps developers and reviewers create structured review findings, organize them visually, and generate professional review reports automatically.
 
 ---
 
-## Following extension guidelines
+# Features
 
-Ensure that you've read through the extensions guidelines and follow the best practices for creating your extension.
+## Add Review Findings Directly From Editor
 
-* [Extension Guidelines](https://code.visualstudio.com/api/references/extension-guidelines)
+Right click anywhere in your code and add:
 
-## Working with Markdown
+- BUG
+- REVIEW
+- SECURITY
+- PERFORMANCE
+- REFACTOR
+- IMPROVE
+- ACCESSIBILITY
+- and more
 
-You can author your README using Visual Studio Code. Here are some useful editor keyboard shortcuts:
+with severity levels:
 
-* Split the editor (`Cmd+\` on macOS or `Ctrl+\` on Windows and Linux).
-* Toggle preview (`Shift+Cmd+V` on macOS or `Shift+Ctrl+V` on Windows and Linux).
-* Press `Ctrl+Space` (Windows, Linux, macOS) to see a list of Markdown snippets.
+- Critical
+- High
+- Medium
+- Low
+- Info
 
-## For more information
+TraceReview automatically inserts formatted review comments into your code.
 
-* [Visual Studio Code's Markdown Support](http://code.visualstudio.com/docs/languages/markdown)
-* [Markdown Syntax Reference](https://help.github.com/articles/markdown-basics/)
+---
 
-**Enjoy!**
+## Sidebar Review Explorer
+
+Visual sidebar for navigating findings:
+
+- Severity grouping
+- File grouping
+- Icons and colors
+- Click-to-navigate support
+
+Example:
+
+```text
+High (2)
+ ├── src/auth.ts
+ │    ├── BUG: Login crashes
+ │
+ ├── src/navbar.tsx
+ │    ├── REVIEW: Navbar spacing issue
+```
+
+---
+
+## Automatic Report Generation
+
+TraceReview automatically generates:
+
+```text
+REVIEW_REPORT.md
+```
+
+every time review findings are updated.
+
+No manual syncing required.
+
+---
+
+## Powerful Filtering
+
+Filter findings by:
+
+- Severity
+- Type
+- Search keyword
+
+Perfect for large projects and audits.
+
+---
+
+# Supported Finding Types
+
+```text
+BUG
+REVIEW
+IMPROVE
+REFACTOR
+OPTIMIZE
+RISK
+TODO
+FIXME
+SECURITY
+UI
+PERFORMANCE
+ACCESSIBILITY
+```
+
+---
+
+# Example Review Comments
+
+## TypeScript / JavaScript
+
+```ts
+// BUG[High]: Login crashes if token is missing
+
+// REVIEW[Medium]: Navbar spacing breaks on tablet
+
+// SECURITY[Critical]: JWT token exposed in local storage
+```
+
+## React / TSX
+
+```tsx
+{
+  /* BUG[High]: Submit button breaks on mobile */
+}
+```
+
+---
+
+# Commands
+
+| Command                         | Description                     |
+| ------------------------------- | ------------------------------- |
+| TraceReview: Generate Report    | Generate review report manually |
+| TraceReview: Add Review Finding | Add review finding from editor  |
+| TraceReview: Filter by Severity | Filter findings by severity     |
+| TraceReview: Filter by Type     | Filter findings by type         |
+| TraceReview: Search Findings    | Search findings                 |
+| TraceReview: Clear Filters      | Reset all filters               |
+
+---
+
+# Workflow
+
+```text
+Right Click
+→ Add Review Finding
+→ Save File
+→ Sidebar Updates
+→ Report Updates Automatically
+```
+
+---
+
+# Why TraceReview?
+
+Most tools are either:
+
+- TODO trackers
+- PR review tools
+- enterprise audit systems
+
+TraceReview focuses on:
+
+✅ lightweight review workflows  
+✅ structured engineering findings  
+✅ developer-first UX  
+✅ in-editor review reporting
+
+---
+
+# Roadmap
+
+- PDF export
+- AI-generated executive summaries
+- Inline gutter decorations
+- GitHub PR integration
+- Team collaboration support
+- Custom review templates
+
+---
+
+# Installation
+
+Install directly from the VS Code Marketplace.
+
+---
+
+# Feedback & Contributions
+
+Issues, suggestions, and contributions are welcome.
+
+GitHub Repository:
+https://github.com/YOUR_USERNAME/tracereview
+
+---
+
+# License
+
+MIT
