@@ -79,5 +79,109 @@ export class FindingTreeItem extends vscode.TreeItem {
     public readonly countKey?: string
   ) {
     super(label, collapsibleState);
+
+    if (countKey) {
+      this.iconPath = getSeverityIcon(countKey);
+    }
+
+    if (finding) {
+      this.iconPath = getTypeIcon(finding.type);
+    }
+  }
+}
+
+function getSeverityIcon(severity: string): vscode.ThemeIcon {
+  switch (severity) {
+    case "Critical":
+      return new vscode.ThemeIcon(
+        "error",
+        new vscode.ThemeColor("errorForeground")
+      );
+    case "High":
+      return new vscode.ThemeIcon(
+        "warning",
+        new vscode.ThemeColor("editorWarning.foreground")
+      );
+    case "Medium":
+      return new vscode.ThemeIcon(
+        "info",
+        new vscode.ThemeColor("charts.yellow")
+      );
+    case "Low":
+      return new vscode.ThemeIcon(
+        "circle-outline",
+        new vscode.ThemeColor("charts.blue")
+      );
+    case "Info":
+      return new vscode.ThemeIcon(
+        "comment-discussion",
+        new vscode.ThemeColor("descriptionForeground")
+      );
+    default:
+      return new vscode.ThemeIcon("circle-outline");
+  }
+}
+
+function getTypeIcon(type: string): vscode.ThemeIcon {
+  switch (type) {
+    case "BUG":
+    case "FIXME":
+      return new vscode.ThemeIcon(
+        "bug",
+        new vscode.ThemeColor("errorForeground")
+      );
+
+    case "SECURITY":
+      return new vscode.ThemeIcon(
+        "shield",
+        new vscode.ThemeColor("editorWarning.foreground")
+      );
+
+    case "PERFORMANCE":
+    case "OPTIMIZE":
+      return new vscode.ThemeIcon(
+        "dashboard",
+        new vscode.ThemeColor("charts.green")
+      );
+
+    case "REFACTOR":
+      return new vscode.ThemeIcon(
+        "tools",
+        new vscode.ThemeColor("charts.blue")
+      );
+
+    case "UI":
+    case "ACCESSIBILITY":
+      return new vscode.ThemeIcon(
+        "symbol-color",
+        new vscode.ThemeColor("charts.purple")
+      );
+
+    case "RISK":
+      return new vscode.ThemeIcon(
+        "warning",
+        new vscode.ThemeColor("editorWarning.foreground")
+      );
+
+    case "IMPROVE":
+      return new vscode.ThemeIcon(
+        "lightbulb",
+        new vscode.ThemeColor("charts.yellow")
+      );
+
+    case "REVIEW":
+      return new vscode.ThemeIcon(
+        "comment",
+        new vscode.ThemeColor("descriptionForeground")
+      );
+
+    case "TODO":
+      return new vscode.ThemeIcon(
+        "checklist",
+        new vscode.ThemeColor("charts.blue")
+      );
+
+    default:
+      return new vscode.ThemeIcon("circle-outline");
   }
 }
