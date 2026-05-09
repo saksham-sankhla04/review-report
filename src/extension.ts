@@ -50,6 +50,13 @@ export function activate(context: vscode.ExtensionContext) {
     }
   );
 
+  const addFindingCommand = vscode.commands.registerCommand(
+    "tracereview.addFinding",
+    async () => {
+      await addReviewFinding();
+    }
+  );
+
   const openFindingCommand = vscode.commands.registerCommand(
     "tracereview.openFinding",
     async (finding: FindingTreeItem) => {
@@ -91,7 +98,8 @@ export function activate(context: vscode.ExtensionContext) {
   context.subscriptions.push(
     generateReportCommand,
     openFindingCommand,
-    autoGenerateOnSave
+    autoGenerateOnSave,
+    addFindingCommand
   );
 
   refreshFindingsAndReport();
@@ -138,6 +146,72 @@ async function scanFindings(): Promise<Finding[]> {
   }
 
   return findings;
+}
+
+async function addReviewFinding() {
+  const editor = vscode.window.activeTextEditor;
+
+  if (!editor) {
+    vscode.window.showErrorMessage("Open a file first.");
+    return;
+  }
+
+  const type = await vscode.window.showQuickPick(TYPES, {
+    placeHolder: "Select review finding type",
+  });
+
+  if (!type) {
+    return;
+  }
+
+  const severity = await vscode.window.showQuickPick(SEVERITIES, {
+    placeHolder: "Select severity",
+  });
+
+  if (!severity) {
+    return;
+  }
+
+  const message = await vscode.window.showInputBox({
+    prompt: "Enter review finding",
+    placeHolder: "Example: Button breaks on mobile screen",
+  });
+
+  if (!message) {
+    return;
+  }
+
+  const currentLine = editor.selection.active.line;
+  const insertPosition = new vscode.Position(currentLine, 0);
+
+  const languageId = editor.document.languageId;
+
+  const commentText = getCommentText(languageId, type, severity, message);
+
+  await editor.edit((editBuilder) => {
+    editBuilder.insert(insertPosition, commentText);
+  });
+
+  await editor.document.save();
+
+  await refreshFindingsAndReport();
+
+  vscode.window.showInformationMessage("TraceReview finding added.");
+}
+
+function getCommentText(
+  languageId: string,
+  type: string,
+  severity: string,
+  message: string
+) {
+  const text = `${type}[${severity}]: ${message}`;
+
+  if (languageId === "typescriptreact" || languageId === "javascriptreact") {
+    return `{/* ${text} */}\n`;
+  }
+
+  return `// ${text}\n`;
 }
 
 async function generateReport(findings: Finding[]) {

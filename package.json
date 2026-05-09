@@ -23,8 +23,21 @@
       {
         "command": "tracereview.openFinding",
         "title": "TraceReview: Open Finding"
+      },
+      {
+        "command": "tracereview.addFinding",
+        "title": "TraceReview: Add Review Finding"
       }
     ],
+    "menus": {
+      "editor/context": [
+        {
+          "command": "tracereview.addFinding",
+          "when": "editorTextFocus",
+          "group": "navigation"
+        }
+      ]
+    },
     "viewsContainers": {
       "activitybar": [
         {
